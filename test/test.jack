@@ -1,0 +1,5 @@
+if (x < 153)
+// I'm a comment
+{let city="Paris";} // I'm a comment to
+/* Comment until closing */
+/* API documentation */
