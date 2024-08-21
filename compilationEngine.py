@@ -1,8 +1,8 @@
 import jackTokenizer
 import xmlWriter
 class CompilationEngine:
-    # OP = ['+','-','*','/','&','|','<','>','=']
-    # UNARY_OP = ['-','~']
+    OP = ['+','-','*','/','&','|','<','>','=']
+    UNARY_OP = ['-','~']
 
     def __init__(self,tokenizer:jackTokenizer.JackTokenizer):
         self._tokenizer = tokenizer
@@ -120,6 +120,7 @@ class CompilationEngine:
         self._writeToken('do')
         # subroutine call
         self._handleSubroutineCall()
+        self._writeToken(';')
         self._writeEndSegment(segment)
     # Compiles a let statement
     def compileLet(self) -> None:
@@ -129,12 +130,13 @@ class CompilationEngine:
         # var name
         self._writeToken(self._tokenizer.indentifier())
         # array indexing
-        if self._tokenizer.tokenType == jackTokenizer.SYMBOL and self._tokenizer.symbol() == '[':
+        if self._tokenizer.tokenType() == jackTokenizer.SYMBOL and self._tokenizer.symbol() == '[':
             self._writeToken('[')
             self.compileExpression()
             self._writeToken(']')
         self._writeToken('=')
         self.compileExpression()
+        self._writeToken(';')
         self._writeEndSegment(segment)
     # Compiles a while statement
     def compileWhile(self) -> None:
@@ -154,12 +156,8 @@ class CompilationEngine:
         self._writeStartSegment(segment)
         self._writeToken('return')
         # Handle without any expression
-        if self._tokenizer.tokenType() == jackTokenizer.SYMBOL:
-            symbol = self._tokenizer.symbol()
-            if symbol == ';':
-                self._writeToken(symbol)
-                return
-        self.compileExpression()
+        if not self._tokenizer.tokenType() == jackTokenizer.SYMBOL or not self._tokenizer.symbol() == ';':
+            self.compileExpression()    
         self._writeToken(';')
         self._writeEndSegment(segment)
     # Compiles an if statement
@@ -185,14 +183,13 @@ class CompilationEngine:
     def compileExpression(self) -> None:
         segment = 'expression'
         self._writeStartSegment(segment)
+        self.compileTerm()
         # Handle op
-        if self._tokenizer.tokenType() == jackTokenizer.SYMBOL:
-            symbol = self._tokenizer.symbol()
-            # if symbol in self.OP:
+        symbol = self._tokenizer.symbol()
+        while self._tokenizer.tokenType() == jackTokenizer.SYMBOL and symbol in self.OP:
             self._writeToken(symbol)
             self.compileTerm()
-        else:
-            self.compileTerm()
+            symbol = self._tokenizer.symbol()
         self._writeEndSegment(segment)
     # Compiles a term
     def compileTerm(self) -> None:

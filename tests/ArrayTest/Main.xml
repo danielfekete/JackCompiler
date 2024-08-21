@@ -53,136 +53,234 @@
 <symbol> ) </symbol>
 </term>
 </expression>
+<symbol> ; </symbol>
 </letStatement>
+<letStatement>
+<keyword> let </keyword>
+<identifier> a </identifier>
+<symbol> = </symbol>
+<expression>
+<term>
+<identifier> Array </identifier>
+<symbol> . </symbol>
+<identifier> new </identifier>
+<symbol> ( </symbol>
+<expressionList>
+<expression>
+<term>
+<identifier> length </identifier>
+</term>
+</expression>
+</expressionList>
+<symbol> ) </symbol>
+</term>
+</expression>
+<symbol> ; </symbol>
+</letStatement>
+<letStatement>
+<keyword> let </keyword>
+<identifier> i </identifier>
+<symbol> = </symbol>
+<expression>
+<term>
+<integerConstant> 0 </integerConstant>
+</term>
+</expression>
+<symbol> ; </symbol>
+</letStatement>
+<whileStatement>
+<keyword> while </keyword>
+<symbol> ( </symbol>
+<expression>
+<term>
+<identifier> i </identifier>
+</term>
+<symbol> &lt; </symbol>
+<term>
+<identifier> length </identifier>
+</term>
+</expression>
+<symbol> ) </symbol>
+<symbol> { </symbol>
+<statements>
+<letStatement>
+<keyword> let </keyword>
+<identifier> a </identifier>
+<symbol> [ </symbol>
+<expression>
+<term>
+<identifier> i </identifier>
+</term>
+</expression>
+<symbol> ] </symbol>
+<symbol> = </symbol>
+<expression>
+<term>
+<identifier> Keyboard </identifier>
+<symbol> . </symbol>
+<identifier> readInt </identifier>
+<symbol> ( </symbol>
+<expressionList>
+<expression>
+<term>
+<stringConstant> ENTER THE NEXT NUMBER:  </stringConstant>
+</term>
+</expression>
+</expressionList>
+<symbol> ) </symbol>
+</term>
+</expression>
+<symbol> ; </symbol>
+</letStatement>
+<letStatement>
+<keyword> let </keyword>
+<identifier> i </identifier>
+<symbol> = </symbol>
+<expression>
+<term>
+<identifier> i </identifier>
+</term>
+<symbol> + </symbol>
+<term>
+<integerConstant> 1 </integerConstant>
+</term>
+</expression>
+<symbol> ; </symbol>
+</letStatement>
+</statements>
+<symbol> } </symbol>
+</whileStatement>
+<letStatement>
+<keyword> let </keyword>
+<identifier> i </identifier>
+<symbol> = </symbol>
+<expression>
+<term>
+<integerConstant> 0 </integerConstant>
+</term>
+</expression>
+<symbol> ; </symbol>
+</letStatement>
+<letStatement>
+<keyword> let </keyword>
+<identifier> sum </identifier>
+<symbol> = </symbol>
+<expression>
+<term>
+<integerConstant> 0 </integerConstant>
+</term>
+</expression>
+<symbol> ; </symbol>
+</letStatement>
+<whileStatement>
+<keyword> while </keyword>
+<symbol> ( </symbol>
+<expression>
+<term>
+<identifier> i </identifier>
+</term>
+<symbol> &lt; </symbol>
+<term>
+<identifier> length </identifier>
+</term>
+</expression>
+<symbol> ) </symbol>
+<symbol> { </symbol>
+<statements>
+<letStatement>
+<keyword> let </keyword>
+<identifier> sum </identifier>
+<symbol> = </symbol>
+<expression>
+<term>
+<identifier> sum </identifier>
+</term>
+<symbol> + </symbol>
+<term>
+<identifier> a </identifier>
+<symbol> [ </symbol>
+<expression>
+<term>
+<identifier> i </identifier>
+</term>
+</expression>
+<symbol> ] </symbol>
+</term>
+</expression>
+<symbol> ; </symbol>
+</letStatement>
+<letStatement>
+<keyword> let </keyword>
+<identifier> i </identifier>
+<symbol> = </symbol>
+<expression>
+<term>
+<identifier> i </identifier>
+</term>
+<symbol> + </symbol>
+<term>
+<integerConstant> 1 </integerConstant>
+</term>
+</expression>
+<symbol> ; </symbol>
+</letStatement>
+</statements>
+<symbol> } </symbol>
+</whileStatement>
+<doStatement>
+<keyword> do </keyword>
+<identifier> Output </identifier>
+<symbol> . </symbol>
+<identifier> printString </identifier>
+<symbol> ( </symbol>
+<expressionList>
+<expression>
+<term>
+<stringConstant> THE AVERAGE IS:  </stringConstant>
+</term>
+</expression>
+</expressionList>
+<symbol> ) </symbol>
+<symbol> ; </symbol>
+</doStatement>
+<doStatement>
+<keyword> do </keyword>
+<identifier> Output </identifier>
+<symbol> . </symbol>
+<identifier> printInt </identifier>
+<symbol> ( </symbol>
+<expressionList>
+<expression>
+<term>
+<identifier> sum </identifier>
+</term>
+<symbol> / </symbol>
+<term>
+<identifier> length </identifier>
+</term>
+</expression>
+</expressionList>
+<symbol> ) </symbol>
+<symbol> ; </symbol>
+</doStatement>
+<doStatement>
+<keyword> do </keyword>
+<identifier> Output </identifier>
+<symbol> . </symbol>
+<identifier> println </identifier>
+<symbol> ( </symbol>
+<expressionList>
+</expressionList>
+<symbol> ) </symbol>
+<symbol> ; </symbol>
+</doStatement>
+<returnStatement>
+<keyword> return </keyword>
+<symbol> ; </symbol>
+</returnStatement>
 </statements>
 <symbol> } </symbol>
 </subroutineBody>
 </subroutineDec>
-<keyword> } </keyword>
-</class>
-<class>
-<symbol> class </symbol>
-<identifier> Array </identifier>
-<symbol> { </symbol>
-<identifier> } </identifier>
-</class>
-<class>
-<identifier> class </identifier>
-<symbol> None </symbol>
-<symbol> { </symbol>
-<keyword> } </keyword>
-</class>
-<class>
-<symbol> class </symbol>
-<integerConstant> None </integerConstant>
-<symbol> { </symbol>
-<keyword> } </keyword>
-</class>
-<class>
-<identifier> class </identifier>
-<symbol> None </symbol>
-<identifier> { </identifier>
-<symbol> } </symbol>
-</class>
-<class>
-<keyword> class </keyword>
-<identifier> a </identifier>
-<symbol> { </symbol>
-<identifier> } </identifier>
-</class>
-<class>
-<symbol> class </symbol>
-<identifier> Keyboard </identifier>
-<symbol> { </symbol>
-<identifier> } </identifier>
-</class>
-<class>
-<stringConstant> class </stringConstant>
-<symbol> None </symbol>
-<symbol> { </symbol>
-<keyword> } </keyword>
-</class>
-<class>
-<symbol> class </symbol>
-<identifier> i </identifier>
-<symbol> { </symbol>
-<integerConstant> } </integerConstant>
-</class>
-<class>
-<symbol> class </symbol>
-<keyword> None </keyword>
-<identifier> { </identifier>
-<symbol> } </symbol>
-</class>
-<class>
-<symbol> class </symbol>
-<keyword> None </keyword>
-<identifier> { </identifier>
-<symbol> } </symbol>
-</class>
-<class>
-<symbol> class </symbol>
-<keyword> None </keyword>
-<symbol> { </symbol>
-<identifier> } </identifier>
-</class>
-<class>
-<identifier> class </identifier>
-<symbol> None </symbol>
-<symbol> { </symbol>
-<keyword> } </keyword>
-</class>
-<class>
-<symbol> class </symbol>
-<identifier> sum </identifier>
-<symbol> { </symbol>
-<identifier> } </identifier>
-</class>
-<class>
-<identifier> class </identifier>
-<symbol> None </symbol>
-<symbol> { </symbol>
-<keyword> } </keyword>
-</class>
-<class>
-<symbol> class </symbol>
-<identifier> i </identifier>
-<symbol> { </symbol>
-<integerConstant> } </integerConstant>
-</class>
-<class>
-<symbol> class </symbol>
-<keyword> None </keyword>
-<identifier> { </identifier>
-<symbol> } </symbol>
-</class>
-<class>
-<symbol> class </symbol>
-<stringConstant> None </stringConstant>
-<symbol> { </symbol>
-<symbol> } </symbol>
-</class>
-<class>
-<identifier> class </identifier>
-<symbol> None </symbol>
-<identifier> { </identifier>
-<symbol> } </symbol>
-</class>
-<class>
-<symbol> class </symbol>
-<identifier> length </identifier>
-<symbol> { </symbol>
-<symbol> } </symbol>
-</class>
-<class>
-<identifier> class </identifier>
-<symbol> None </symbol>
-<identifier> { </identifier>
-<symbol> } </symbol>
-</class>
-<class>
-<symbol> class </symbol>
-<keyword> None </keyword>
-<symbol> { </symbol>
 <symbol> } </symbol>
 </class>
