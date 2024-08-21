@@ -1,0 +1,169 @@
+<class>
+<keyword> class </keyword>
+<identifier> Main </identifier>
+<symbol> { </symbol>
+<classVarDeclaration>
+<keyword> static </keyword>
+<keyword> boolean </keyword>
+<identifier> test </identifier>
+<symbol> ; </symbol>
+</classVarDeclaration>
+<subroutineDec>
+<keyword> function </keyword>
+<keyword> void </keyword>
+<identifier> main </identifier>
+<symbol> ( </symbol>
+<parameterList>
+</parameterList>
+<symbol> ) </symbol>
+<subroutineBody>
+<symbol> { </symbol>
+<varDec>
+<keyword> var </keyword>
+<identifier> SquareGame </identifier>
+<identifier> game </identifier>
+<symbol> ; </symbol>
+</varDec>
+<statements>
+<letStatement>
+<keyword> let </keyword>
+<identifier> game </identifier>
+<symbol> = </symbol>
+<expression>
+<term>
+<identifier> SquareGame </identifier>
+<symbol> . </symbol>
+<identifier> new </identifier>
+<symbol> ( </symbol>
+<expressionList>
+</expressionList>
+<symbol> ) </symbol>
+</term>
+</expression>
+</letStatement>
+</statements>
+<symbol> } </symbol>
+</subroutineBody>
+</subroutineDec>
+<keyword> } </keyword>
+</class>
+<class>
+<symbol> class </symbol>
+<identifier> run </identifier>
+<symbol> { </symbol>
+<symbol> } </symbol>
+</class>
+<class>
+<keyword> class </keyword>
+<identifier> game </identifier>
+<symbol> { </symbol>
+<identifier> } </identifier>
+</class>
+<class>
+<symbol> class </symbol>
+<symbol> None </symbol>
+<keyword> { </keyword>
+<symbol> } </symbol>
+</class>
+<class>
+<keyword> class </keyword>
+<keyword> None </keyword>
+<identifier> { </identifier>
+<symbol> } </symbol>
+</class>
+<class>
+<symbol> class </symbol>
+<keyword> None </keyword>
+<keyword> { </keyword>
+<identifier> } </identifier>
+</class>
+<class>
+<identifier> class </identifier>
+<symbol> None </symbol>
+<keyword> { </keyword>
+<identifier> } </identifier>
+</class>
+<class>
+<symbol> class </symbol>
+<keyword> None </keyword>
+<identifier> { </identifier>
+<identifier> } </identifier>
+</class>
+<class>
+<keyword> class </keyword>
+<symbol> None </symbol>
+<keyword> { </keyword>
+<symbol> } </symbol>
+</class>
+<class>
+<keyword> class </keyword>
+<identifier> s </identifier>
+<symbol> { </symbol>
+<stringConstant> } </stringConstant>
+</class>
+<class>
+<keyword> class </keyword>
+<identifier> s </identifier>
+<symbol> { </symbol>
+<keyword> } </keyword>
+</class>
+<class>
+<keyword> class </keyword>
+<identifier> a </identifier>
+<symbol> { </symbol>
+<integerConstant> } </integerConstant>
+</class>
+<class>
+<symbol> class </symbol>
+<identifier> a </identifier>
+<symbol> { </symbol>
+<integerConstant> } </integerConstant>
+</class>
+<class>
+<symbol> class </symbol>
+<symbol> None </symbol>
+<keyword> { </keyword>
+<symbol> } </symbol>
+</class>
+<class>
+<identifier> class </identifier>
+<symbol> None </symbol>
+<identifier> { </identifier>
+<symbol> } </symbol>
+</class>
+<class>
+<symbol> class </symbol>
+<identifier> j </identifier>
+<symbol> { </symbol>
+<symbol> } </symbol>
+</class>
+<class>
+<identifier> class </identifier>
+<symbol> None </symbol>
+<identifier> { </identifier>
+<symbol> } </symbol>
+</class>
+<class>
+<symbol> class </symbol>
+<integerConstant> None </integerConstant>
+<symbol> { </symbol>
+<symbol> } </symbol>
+</class>
+<class>
+<identifier> class </identifier>
+<symbol> None </symbol>
+<identifier> { </identifier>
+<symbol> } </symbol>
+</class>
+<class>
+<symbol> class </symbol>
+<symbol> None </symbol>
+<keyword> { </keyword>
+<symbol> } </symbol>
+</class>
+<class>
+<symbol> class </symbol>
+<symbol> None </symbol>
+<symbol> { </symbol>
+<symbol> } </symbol>
+</class>

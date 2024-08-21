@@ -1,5 +1,6 @@
 import os
 import jackTokenizer
+import compilationEngine
 
 class JackAnalyzer:
     def __init__(self,src:str):
@@ -18,4 +19,22 @@ class JackAnalyzer:
 
     def analyze(self,src:str):
         # Create a JackTokenizer from the input file
-        jackTokenizer.JackTokenizer(src)
+        tokenizer = jackTokenizer.JackTokenizer(src)
+
+        # TODO: Remove this after testing
+        tokensOutName = src.replace(".jack","T.xml")
+        if os.path.exists(tokensOutName):
+            # Remove the output file
+            os.remove(tokensOutName)
+        tokensOutFile = open(tokensOutName,"a")
+        tokensOutFile.write(tokenizer.getOut())
+
+        engine = compilationEngine.CompilationEngine(tokenizer)
+        # Create an output file, and write the engine output to it
+        outName = src.replace(".jack",".xml")
+        # Check if the output file is already exists
+        if os.path.exists(outName):
+            # Remove the output file
+            os.remove(outName)
+        outFile = open(outName,"a")
+        outFile.write(engine.getOut())
