@@ -28,7 +28,7 @@ class CompilationEngine:
         self._writeEndSegment(segment)
     # Compiles a static declaration or a field declaration
     def compileClassVarDec(self) -> None:
-        segment = 'classVarDeclaration'
+        segment = 'classVarDec'
         self._writeStartSegment(segment)
         # static | field
         self._writeToken(self._tokenizer.keyWord())
@@ -164,7 +164,7 @@ class CompilationEngine:
     def compileIf(self) -> None:
         segment = 'ifStatement'
         self._writeStartSegment(segment)
-        self._writeStartSegment('if')
+        self._writeToken('if')
         self._writeToken('(')
         self.compileExpression()
         self._writeToken(')')
@@ -236,7 +236,7 @@ class CompilationEngine:
         segment = 'expressionList'
         self._writeStartSegment(segment)
         varCount = 0
-        while not self._tokenizer.tokenType() == jackTokenizer.SYMBOL or self._tokenizer.symbol() == ',':
+        while self._tokenizer.symbol() == ',' or not self._tokenizer.symbol() == ')':
             if varCount > 0:
                 self._writeToken(',')
             self.compileExpression()
