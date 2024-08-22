@@ -21,13 +21,12 @@ class JackAnalyzer:
         # Create a JackTokenizer from the input file
         tokenizer = jackTokenizer.JackTokenizer(src)
 
-        # TODO: Remove this after testing
-        tokensOutName = src.replace(".jack","T.xml")
-        if os.path.exists(tokensOutName):
-            # Remove the output file
-            os.remove(tokensOutName)
-        tokensOutFile = open(tokensOutName,"a")
-        tokensOutFile.write(tokenizer.getOut())
+        # tokensOutName = src.replace(".jack","T.xml")
+        # if os.path.exists(tokensOutName):
+        #     # Remove the output file
+        #     os.remove(tokensOutName)
+        # tokensOutFile = open(tokensOutName,"a")
+        # tokensOutFile.write(tokenizer.getOut())
 
         engine = compilationEngine.CompilationEngine(tokenizer)
         # Create an output file, and write the engine output to it
