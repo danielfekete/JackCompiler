@@ -1,5 +1,4 @@
 import jackTokenizer
-import xmlWriter
 class CompilationEngine:
     OP = ['+','-','*','/','&','|','<','>','=']
     UNARY_OP = ['-','~']
@@ -265,14 +264,16 @@ class CompilationEngine:
         
     def _writeToken(self,val:str):
         tokenType=self._tokenizer.tokenType()
-        self._appendOut(xmlWriter.XmlWriter.writeToken(val,tokenType))
+        # self._appendOut(xmlWriter.XmlWriter.writeToken(val,tokenType))
         self._tokenizer.advance()
 
     def _writeStartSegment(self,segment):
-        self._appendOut(xmlWriter.XmlWriter.writeStartSegment(segment))
+        # self._appendOut(xmlWriter.XmlWriter.writeStartSegment(segment))
+        pass
     
     def _writeEndSegment(self,segment):
-        self._appendOut(xmlWriter.XmlWriter.writeEndSegment(segment))
+        # self._appendOut(xmlWriter.XmlWriter.writeEndSegment(segment))
+        pass
 
     def _appendOut(self,appendVal):
         self._out+=appendVal

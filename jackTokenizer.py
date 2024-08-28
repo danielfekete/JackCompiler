@@ -1,5 +1,4 @@
 import re
-import xmlWriter
 
 SYMBOL = "SYMBOL"
 KEYWORD = "KEYWORD"
@@ -30,7 +29,6 @@ class JackTokenizer:
     def _tokenize(self):
         tokens = []
         
-        # self._appendOut(xmlWriter.XmlWriter.writeStartSegment('tokens'))
         # Split by white spaces except white spaces between double qoutes
         for part in re.split(r'\s+(?=(?:[^"]*"[^"]*")*[^"]*$)',self._input):
             token = ""
@@ -66,13 +64,9 @@ class JackTokenizer:
                         'tokenType':tokenType
                     })
                     token = ""
-                    # Write token to output xml
-                    # self._appendOut(xmlWriter.XmlWriter.writeToken(newToken,tokenType))
-                    
                 else:
                     token = newToken
         self._tokens = tokens
-        # self._appendOut(xmlWriter.XmlWriter.writeEndSegment('tokens'))
         
 
         
