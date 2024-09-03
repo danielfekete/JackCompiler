@@ -1,4 +1,6 @@
 import jackTokenizer
+import xmlWriter
+import symbolTable
 class CompilationEngine:
     OP = ['+','-','*','/','&','|','<','>','=']
     UNARY_OP = ['-','~']
@@ -6,6 +8,7 @@ class CompilationEngine:
     def __init__(self,tokenizer:jackTokenizer.JackTokenizer):
         self._tokenizer = tokenizer
         self._out=''
+        self._symbolTable = symbolTable.SymbolTable()
         while tokenizer.hasMoreTokens():
             tokenizer.advance()
             self.compileClass()
@@ -13,9 +16,12 @@ class CompilationEngine:
     def compileClass(self) -> None:
         segment = 'class'
         self._writeStartSegment(segment)
+        # keyword
         self._writeToken('class')
         # class name
-        self._writeToken(self._tokenizer.indentifier())
+        classname = self._tokenizer.identifier()
+        self._writeIdentifier(classname,'class',True)
+
         self._writeToken('{')
         # class var declarations, possibly empty
         while self._tokenizer.tokenType() == jackTokenizer.KEYWORD and self._tokenizer.keyWord() in ['static','field']:
@@ -30,27 +36,38 @@ class CompilationEngine:
         segment = 'classVarDec'
         self._writeStartSegment(segment)
         # static | field
-        self._writeToken(self._tokenizer.keyWord())
+        category = self._tokenizer.keyWord()
+        self._writeToken(category)
         # type keyword(int, string, boolean) | identifier(another class)
-        self._writeToken(self._tokenizer.indentifier() if self._tokenizer.tokenType() == jackTokenizer.IDENTIFIER else self._tokenizer.keyWord())
+        type = self._tokenizer.identifier() if self._tokenizer.tokenType() == jackTokenizer.IDENTIFIER else self._tokenizer.keyWord()
+        self._writeToken(type)
         # var name
-        self._writeToken(self._tokenizer.indentifier())
-        # compile multiple var declarations
+        varName = self._tokenizer.identifier()
+        # Write the class var declaration
+        self._symbolTable.define(varName,type,category)
+        self._writeIdentifier(varName,category,True)
+        # compile multiple static | field declarations
         while self._tokenizer.tokenType() == jackTokenizer.SYMBOL and self._tokenizer.symbol() == ',':
             self._writeToken(',')
-            self._writeToken(self._tokenizer.indentifier())
+            varName = self._tokenizer.identifier()
+            # Write the class var declaration
+            self._symbolTable.define(varName,type,category)
+            self._writeIdentifier(varName,category,True)
         self._writeToken(';')
         self._writeEndSegment(segment)
     # Compiles a complete method, contstructor or a function
     def compileSubroutine(self) -> None:
-        segment='subroutineDec'
+        self._symbolTable.startSubroutine()
+        segment = 'subroutineDec'
         self._writeStartSegment(segment)
         # constructor | function | method
         self._writeToken(self._tokenizer.keyWord())
         # void | type: keyword(int, string, boolean) | identifier(another class)
-        self._writeToken(self._tokenizer.indentifier() if self._tokenizer.tokenType() == jackTokenizer.IDENTIFIER else self._tokenizer.keyWord())
+        type = self._tokenizer.identifier() if self._tokenizer.tokenType() == jackTokenizer.IDENTIFIER else self._tokenizer.keyWord()
+        self._writeToken(type)
         # subroutine name
-        self._writeToken(self._tokenizer.indentifier())
+        subroutineName=self._tokenizer.identifier()
+        self._writeIdentifier(subroutineName,'subroutine',True)
         self._writeToken('(')
         self.compileParameterList()
         self._writeToken(')')
@@ -74,24 +91,36 @@ class CompilationEngine:
             if varCount > 0:
                 self._writeToken(',')
             # type
-            self._writeToken(self._tokenizer.indentifier() if self._tokenizer.tokenType() == jackTokenizer.IDENTIFIER else self._tokenizer.keyWord())
+            type = self._tokenizer.identifier() if self._tokenizer.tokenType() == jackTokenizer.IDENTIFIER else self._tokenizer.keyWord()
+            self._writeToken(type)
             # var name
-            self._writeToken(self._tokenizer.indentifier())
+            varName = self._tokenizer.identifier()
+            # add arguments to symbol table
+            category = 'argument'
+            self._symbolTable.define(varName,type,category)
+            self._writeIdentifier(varName,category,True)
             varCount += 1
         self._writeEndSegment(segment)
     # Compiles a var declaration
     def compileVarDec(self) -> None:
         segment = 'varDec'
         self._writeStartSegment(segment)
-        self._writeToken('var')
+        category = 'var'
+        self._writeToken(category)
         # type keyword(int, string, boolean) | identifier(another class)
-        self._writeToken(self._tokenizer.indentifier() if self._tokenizer.tokenType() == jackTokenizer.IDENTIFIER else self._tokenizer.keyWord())
+        type = self._tokenizer.identifier() if self._tokenizer.tokenType() == jackTokenizer.IDENTIFIER else self._tokenizer.keyWord()
+        self._writeToken(type)
         # compile multiple var names
-        
-        self._writeToken(self._tokenizer.indentifier())
+        varName = self._tokenizer.identifier()
+        # add var declaration, symbol to symboltable
+        self._symbolTable.define(varName,type,category)
+        self._writeIdentifier(varName,category,True)
+
         while self._tokenizer.tokenType() == jackTokenizer.SYMBOL and self._tokenizer.symbol() == ',':
             self._writeToken(',')
-            self._writeToken(self._tokenizer.indentifier())
+            varName = self._tokenizer.identifier()
+            self._symbolTable.define(varName,type,category)
+            self._writeIdentifier(varName,category,True)
         self._writeToken(';')
         self._writeEndSegment(segment)
     # Compiles a sequence of statements
@@ -127,7 +156,9 @@ class CompilationEngine:
         self._writeStartSegment(segment)
         self._writeToken('let')
         # var name
-        self._writeToken(self._tokenizer.indentifier())
+        varName = self._tokenizer.identifier()
+        category = self._symbolTable.kindOf(varName)
+        self._writeIdentifier(varName,category,False)
         # array indexing
         if self._tokenizer.tokenType() == jackTokenizer.SYMBOL and self._tokenizer.symbol() == '[':
             self._writeToken('[')
@@ -211,7 +242,9 @@ class CompilationEngine:
                 # handle subroutine call
                 self._handleSubroutineCall()
             else:
-                self._writeToken(self._tokenizer.indentifier())
+                varName = self._tokenizer.identifier()
+                category = self._symbolTable.kindOf(varName)
+                self._writeIdentifier(varName,category,False)
                 if nextToken == '[':
                     # handle array indexing
                     self._writeToken('[')
@@ -246,12 +279,18 @@ class CompilationEngine:
         return self._out
     def _handleSubroutineCall(self):
         # class name | subroutine name | var name
-        self._writeToken(self._tokenizer.indentifier())
+        varName = self._tokenizer.identifier()
+        isClass = self._lookAhead(1)['token'] == '.'
         symbol = self._tokenizer.symbol()
         # handle class or var subroutine
-        if symbol == '.':
+        if isClass:
+            self._writeIdentifier(varName, 'class',False)
             self._writeToken(symbol)
-            self._writeToken(self._tokenizer.indentifier())
+            varName = self._tokenizer.identifier()
+            self._writeIdentifier(varName,'subroutine',False)
+        else:
+            category = self._symbolTable.kindOf(varName)
+            self._writeIdentifier(varName,category,False)
         self._writeToken('(')
         self.compileExpressionList()
         self._writeToken(')')
@@ -264,17 +303,46 @@ class CompilationEngine:
         
     def _writeToken(self,val:str):
         tokenType=self._tokenizer.tokenType()
-        # self._appendOut(xmlWriter.XmlWriter.writeToken(val,tokenType))
+        self._appendOut(xmlWriter.XmlWriter.writeToken(val,tokenType))
         self._tokenizer.advance()
 
-    # def _writeStartSegment(self,segment):
-    #     # self._appendOut(xmlWriter.XmlWriter.writeStartSegment(segment))
-    #     pass
+    def _writeStartSegment(self,segment):
+        self._appendOut(xmlWriter.XmlWriter.writeStartSegment(segment))
     
-    # def _writeEndSegment(self,segment):
-    #     # self._appendOut(xmlWriter.XmlWriter.writeEndSegment(segment))
-    #     pass
+    def _writeEndSegment(self,segment):
+        self._appendOut(xmlWriter.XmlWriter.writeEndSegment(segment))
+
+
+    def _writeIdentifier(self,name:str,category:str,new:bool):
+        segment="identifier"
+        self._writeStartSegment(segment)
+        # Write the identifier
+        self._appendOut(f"<value> {name} </value>\n")
+        # Class or subroutine
+        if category and category in ['class','subroutine']:
+            self._writeCategory(category)
+        else:
+            # Get the category from the symbolTable and write it
+            category = self._symbolTable.kindOf(name)
+            # print(f'identifier name: {name}')
+            # print(f'category: {category}')
+            self._writeCategory(category)
+            # write the symbol running index
+            self._writeRunningIndex(name)
+        # write the smybol status 'declared' | 'used'
+        self._writeStatus('declared' if new else 'used')
+        self._writeEndSegment(segment)
+        self._tokenizer.advance()
+
+    def _writeCategory(self,category):
+        self._appendOut(f"<category> {category} </category>\n")
+
+    # Write the running index if the identifier category is var, argument, static or field
+    def _writeRunningIndex(self,name:str):
+        self._appendOut(f"<index> {str(self._symbolTable.indexOf(name))} </index>\n")
+
+    def _writeStatus(self,status:str):
+        self._appendOut(f"<status> {status} </status>\n")
 
     def _appendOut(self,appendVal):
         self._out+=appendVal
-

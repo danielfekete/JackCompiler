@@ -1,11 +1,19 @@
 <class>
 <keyword> class </keyword>
-<identifier> Main </identifier>
+<identifier>
+<value> Main </value>
+<category> class </category>
+<status> declared </status>
+</identifier>
 <symbol> { </symbol>
 <subroutineDec>
 <keyword> function </keyword>
 <keyword> void </keyword>
-<identifier> main </identifier>
+<identifier>
+<value> main </value>
+<category> subroutine </category>
+<status> declared </status>
+</identifier>
 <symbol> ( </symbol>
 <parameterList>
 </parameterList>
@@ -15,33 +23,66 @@
 <varDec>
 <keyword> var </keyword>
 <identifier> Array </identifier>
-<identifier> a </identifier>
+<identifier>
+<value> a </value>
+<category> var </category>
+<index> 0 </index>
+<status> declared </status>
+</identifier>
 <symbol> ; </symbol>
 </varDec>
 <varDec>
 <keyword> var </keyword>
 <keyword> int </keyword>
-<identifier> length </identifier>
+<identifier>
+<value> length </value>
+<category> var </category>
+<index> 1 </index>
+<status> declared </status>
+</identifier>
 <symbol> ; </symbol>
 </varDec>
 <varDec>
 <keyword> var </keyword>
 <keyword> int </keyword>
-<identifier> i </identifier>
+<identifier>
+<value> i </value>
+<category> var </category>
+<index> 2 </index>
+<status> declared </status>
+</identifier>
 <symbol> , </symbol>
-<identifier> sum </identifier>
+<identifier>
+<value> sum </value>
+<category> var </category>
+<index> 3 </index>
+<status> declared </status>
+</identifier>
 <symbol> ; </symbol>
 </varDec>
 <statements>
 <letStatement>
 <keyword> let </keyword>
-<identifier> length </identifier>
+<identifier>
+<value> length </value>
+<category> var </category>
+<index> 1 </index>
+<status> used </status>
+</identifier>
 <symbol> = </symbol>
 <expression>
 <term>
-<identifier> Keyboard </identifier>
-<symbol> . </symbol>
-<identifier> readInt </identifier>
+<identifier>
+<value> Keyboard </value>
+<category> class </category>
+<status> used </status>
+</identifier>
+<symbol> None </symbol>
+<identifier>
+<value> readInt </value>
+<category> subroutine </category>
+<status> used </status>
+</identifier>
 <symbol> ( </symbol>
 <expressionList>
 <expression>
@@ -57,18 +98,36 @@
 </letStatement>
 <letStatement>
 <keyword> let </keyword>
-<identifier> a </identifier>
+<identifier>
+<value> a </value>
+<category> var </category>
+<index> 0 </index>
+<status> used </status>
+</identifier>
 <symbol> = </symbol>
 <expression>
 <term>
-<identifier> Array </identifier>
-<symbol> . </symbol>
-<identifier> new </identifier>
+<identifier>
+<value> Array </value>
+<category> class </category>
+<status> used </status>
+</identifier>
+<symbol> None </symbol>
+<identifier>
+<value> new </value>
+<category> subroutine </category>
+<status> used </status>
+</identifier>
 <symbol> ( </symbol>
 <expressionList>
 <expression>
 <term>
-<identifier> length </identifier>
+<identifier>
+<value> length </value>
+<category> var </category>
+<index> 1 </index>
+<status> used </status>
+</identifier>
 </term>
 </expression>
 </expressionList>
@@ -79,7 +138,12 @@
 </letStatement>
 <letStatement>
 <keyword> let </keyword>
-<identifier> i </identifier>
+<identifier>
+<value> i </value>
+<category> var </category>
+<index> 2 </index>
+<status> used </status>
+</identifier>
 <symbol> = </symbol>
 <expression>
 <term>
@@ -93,11 +157,21 @@
 <symbol> ( </symbol>
 <expression>
 <term>
-<identifier> i </identifier>
+<identifier>
+<value> i </value>
+<category> var </category>
+<index> 2 </index>
+<status> used </status>
+</identifier>
 </term>
 <symbol> &lt; </symbol>
 <term>
-<identifier> length </identifier>
+<identifier>
+<value> length </value>
+<category> var </category>
+<index> 1 </index>
+<status> used </status>
+</identifier>
 </term>
 </expression>
 <symbol> ) </symbol>
@@ -105,20 +179,38 @@
 <statements>
 <letStatement>
 <keyword> let </keyword>
-<identifier> a </identifier>
+<identifier>
+<value> a </value>
+<category> var </category>
+<index> 0 </index>
+<status> used </status>
+</identifier>
 <symbol> [ </symbol>
 <expression>
 <term>
-<identifier> i </identifier>
+<identifier>
+<value> i </value>
+<category> var </category>
+<index> 2 </index>
+<status> used </status>
+</identifier>
 </term>
 </expression>
 <symbol> ] </symbol>
 <symbol> = </symbol>
 <expression>
 <term>
-<identifier> Keyboard </identifier>
-<symbol> . </symbol>
-<identifier> readInt </identifier>
+<identifier>
+<value> Keyboard </value>
+<category> class </category>
+<status> used </status>
+</identifier>
+<symbol> None </symbol>
+<identifier>
+<value> readInt </value>
+<category> subroutine </category>
+<status> used </status>
+</identifier>
 <symbol> ( </symbol>
 <expressionList>
 <expression>
@@ -134,11 +226,21 @@
 </letStatement>
 <letStatement>
 <keyword> let </keyword>
-<identifier> i </identifier>
+<identifier>
+<value> i </value>
+<category> var </category>
+<index> 2 </index>
+<status> used </status>
+</identifier>
 <symbol> = </symbol>
 <expression>
 <term>
-<identifier> i </identifier>
+<identifier>
+<value> i </value>
+<category> var </category>
+<index> 2 </index>
+<status> used </status>
+</identifier>
 </term>
 <symbol> + </symbol>
 <term>
@@ -152,7 +254,12 @@
 </whileStatement>
 <letStatement>
 <keyword> let </keyword>
-<identifier> i </identifier>
+<identifier>
+<value> i </value>
+<category> var </category>
+<index> 2 </index>
+<status> used </status>
+</identifier>
 <symbol> = </symbol>
 <expression>
 <term>
@@ -163,7 +270,12 @@
 </letStatement>
 <letStatement>
 <keyword> let </keyword>
-<identifier> sum </identifier>
+<identifier>
+<value> sum </value>
+<category> var </category>
+<index> 3 </index>
+<status> used </status>
+</identifier>
 <symbol> = </symbol>
 <expression>
 <term>
@@ -177,11 +289,21 @@
 <symbol> ( </symbol>
 <expression>
 <term>
-<identifier> i </identifier>
+<identifier>
+<value> i </value>
+<category> var </category>
+<index> 2 </index>
+<status> used </status>
+</identifier>
 </term>
 <symbol> &lt; </symbol>
 <term>
-<identifier> length </identifier>
+<identifier>
+<value> length </value>
+<category> var </category>
+<index> 1 </index>
+<status> used </status>
+</identifier>
 </term>
 </expression>
 <symbol> ) </symbol>
@@ -189,19 +311,39 @@
 <statements>
 <letStatement>
 <keyword> let </keyword>
-<identifier> sum </identifier>
+<identifier>
+<value> sum </value>
+<category> var </category>
+<index> 3 </index>
+<status> used </status>
+</identifier>
 <symbol> = </symbol>
 <expression>
 <term>
-<identifier> sum </identifier>
+<identifier>
+<value> sum </value>
+<category> var </category>
+<index> 3 </index>
+<status> used </status>
+</identifier>
 </term>
 <symbol> + </symbol>
 <term>
-<identifier> a </identifier>
+<identifier>
+<value> a </value>
+<category> var </category>
+<index> 0 </index>
+<status> used </status>
+</identifier>
 <symbol> [ </symbol>
 <expression>
 <term>
-<identifier> i </identifier>
+<identifier>
+<value> i </value>
+<category> var </category>
+<index> 2 </index>
+<status> used </status>
+</identifier>
 </term>
 </expression>
 <symbol> ] </symbol>
@@ -211,11 +353,21 @@
 </letStatement>
 <letStatement>
 <keyword> let </keyword>
-<identifier> i </identifier>
+<identifier>
+<value> i </value>
+<category> var </category>
+<index> 2 </index>
+<status> used </status>
+</identifier>
 <symbol> = </symbol>
 <expression>
 <term>
-<identifier> i </identifier>
+<identifier>
+<value> i </value>
+<category> var </category>
+<index> 2 </index>
+<status> used </status>
+</identifier>
 </term>
 <symbol> + </symbol>
 <term>
@@ -229,9 +381,17 @@
 </whileStatement>
 <doStatement>
 <keyword> do </keyword>
-<identifier> Output </identifier>
-<symbol> . </symbol>
-<identifier> printString </identifier>
+<identifier>
+<value> Output </value>
+<category> class </category>
+<status> used </status>
+</identifier>
+<symbol> None </symbol>
+<identifier>
+<value> printString </value>
+<category> subroutine </category>
+<status> used </status>
+</identifier>
 <symbol> ( </symbol>
 <expressionList>
 <expression>
@@ -245,18 +405,36 @@
 </doStatement>
 <doStatement>
 <keyword> do </keyword>
-<identifier> Output </identifier>
-<symbol> . </symbol>
-<identifier> printInt </identifier>
+<identifier>
+<value> Output </value>
+<category> class </category>
+<status> used </status>
+</identifier>
+<symbol> None </symbol>
+<identifier>
+<value> printInt </value>
+<category> subroutine </category>
+<status> used </status>
+</identifier>
 <symbol> ( </symbol>
 <expressionList>
 <expression>
 <term>
-<identifier> sum </identifier>
+<identifier>
+<value> sum </value>
+<category> var </category>
+<index> 3 </index>
+<status> used </status>
+</identifier>
 </term>
 <symbol> / </symbol>
 <term>
-<identifier> length </identifier>
+<identifier>
+<value> length </value>
+<category> var </category>
+<index> 1 </index>
+<status> used </status>
+</identifier>
 </term>
 </expression>
 </expressionList>
@@ -265,9 +443,17 @@
 </doStatement>
 <doStatement>
 <keyword> do </keyword>
-<identifier> Output </identifier>
-<symbol> . </symbol>
-<identifier> println </identifier>
+<identifier>
+<value> Output </value>
+<category> class </category>
+<status> used </status>
+</identifier>
+<symbol> None </symbol>
+<identifier>
+<value> println </value>
+<category> subroutine </category>
+<status> used </status>
+</identifier>
 <symbol> ( </symbol>
 <expressionList>
 </expressionList>
