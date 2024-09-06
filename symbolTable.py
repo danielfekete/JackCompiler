@@ -43,7 +43,7 @@ class SymbolTable:
             return identifier[0]
         return None
     # Returns the index assigned to the named identifier.
-    def indexOf(self,name:str)->int:
+    def indexOf(self,name:str)->int | None:
         identifier = self._getIdentifier(name)
         if identifier:
             return identifier[2]

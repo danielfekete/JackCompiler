@@ -1,15 +1,15 @@
 class VmWriter:
     # Creates a new file and prepares it for writing
-    def __init__(self,outPath:str) -> None:
+    def __init__(self,outPath:str):
         self.outFile = open(outPath,'w')
         pass
     # Writes a VM push command
     def writePush(self,segment:str,index:int)->None:
-        self.outFile.write(f'push {segment} {index}\n')
+        self.outFile.write(f'push {segment} {str(index)}\n')
         pass
     # Writes a VM pop command
     def writePop(self,segment:str,index:int)->None:
-        self.outFile.write(f'pop {segment} {index}\n')
+        self.outFile.write(f'pop {segment} {str(index)}\n')
         pass
     # Writes a VM arithmetic-logical command
     def writeArithmetic(self,command:str)->None:
