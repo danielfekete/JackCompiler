@@ -1,6 +1,7 @@
 import jackTokenizer
 import vmWriter
 import symbolTable
+from osUtils import osTypes
 class CompilationEngine:
     
     OP = {
@@ -33,7 +34,8 @@ class CompilationEngine:
             'while':0,
             'if':0
         }
-        self._returnTypes = {}
+        # construct with os void return types
+        self._returnTypes={}
         self._symbolTable = symbolTable.SymbolTable()
 
     def setTokenizer(self,tokenizer:jackTokenizer.JackTokenizer):
@@ -185,6 +187,7 @@ class CompilationEngine:
     # Compiles a sequence of statements
     def compileStatements(self) -> None:
         # compile different statements while | if | let | do | return
+        print(self._tokenizer.keyWord())
         while self._tokenizer.tokenType() == jackTokenizer.KEYWORD:
             keyword = self._tokenizer.keyWord()
             if keyword == 'while':
@@ -337,11 +340,14 @@ class CompilationEngine:
         # Handle integer const
         if tokenType == jackTokenizer.INT_CONST:
             num = self._tokenizer.intVal()
-            self._writer.writePush('constant',str(num))
+            self._writer.writePush('constant',num)
             self._tokenizer.advance()
         # Handle string const
         elif tokenType == jackTokenizer.STRING_CONST:
-            # TODO: handle string const
+            ch = self._tokenizer.stringVal()
+            for character in range(0, len(ch)):
+                self._writer.writePush('constant',ord(ch[character]))
+                self._writer.writeCall("String.appendChar",2)
             self._tokenizer.advance()
         # Handle keyword
         elif tokenType == jackTokenizer.KEYWORD:
@@ -352,7 +358,7 @@ class CompilationEngine:
                 # negate 1 -> -1
                 self._writer.writePush("constant",1)
                 self._writer.writeArithmetic(self.OP["-"])
-            # TODO: handle this and that
+            # this handling
             elif keyWord == "this":
                 # base address of the object
                 self._writer.writePush('pointer',0)
@@ -361,9 +367,11 @@ class CompilationEngine:
         elif tokenType == jackTokenizer.IDENTIFIER:
             # subroutine | class | var name
             varName = self._tokenizer.identifier()
+       
             nextToken = self._lookAhead(1)['token']
             # subroutine | class
             if nextToken in ['(','.']:
+             
                 subroutineName = ""
                 # . | (
                 self._tokenizer.advance()
@@ -371,6 +379,7 @@ class CompilationEngine:
                 # handle class or var name
                 if nextToken == '.':
                     # get variable from symbolTable
+                    
                     index = self._symbolTable.indexOf(varName)
 
                     className = varName
@@ -386,6 +395,7 @@ class CompilationEngine:
                     # subroutine name
                     self._tokenizer.advance()
                     subroutineName=f'{className}.{self._tokenizer.identifier()}'    
+                    
                     # self._tokenizer.advance()
                 else:
                     subroutineName = f'{self._className}.{varName}'                
@@ -395,7 +405,14 @@ class CompilationEngine:
                 # )
                 self._tokenizer.advance()
                 self._writer.writeCall(subroutineName,n)
-                returnType = self._returnTypes[f'{className}.{subroutineName}']
+        
+                # handleReturn type         
+                returnType = ""
+                if subroutineName in self._returnTypes:
+                    returnType = self._returnTypes[subroutineName]
+                else:
+                    # os functions
+                    returnType = osTypes[subroutineName]
                 if returnType == "void":
                     # pop temp 0
                     self._writer.writePop('temp',0)
