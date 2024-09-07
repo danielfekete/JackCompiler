@@ -1,0 +1,3 @@
+function Main.main 1
+push constant 8001
+push constant 16
