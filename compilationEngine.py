@@ -50,6 +50,7 @@ class CompilationEngine:
         while self._tokenizer.hasMoreTokens():
             self._tokenizer.advance()
             self.compileClass()
+        self._writer.close()
 
     # Compiles a complete class
     def compileClass(self) -> None:
@@ -117,12 +118,10 @@ class CompilationEngine:
         self._tokenizer.advance()
         # add this to argument 0
         if keyWord == "method":
-            self._symbolTable.define("this",self._className,"argument")
-        varCount = self.compileParameterList()
+            self._symbolTable.define("this",self._className,"arg")
+        self.compileParameterList()
         # symbol )
         self._tokenizer.advance()
-        # function className.subroutineName n
-        self._writer.writeFunction(f'{self._className}.{subroutineName}',varCount)
         # handling base address anchoring
         if keyWord == "constructor":
             # Get the number of fields of the class
@@ -138,8 +137,11 @@ class CompilationEngine:
         # {
         self._tokenizer.advance()
         # multiple var declarations
+        varCount = 0
         while self._tokenizer.tokenType() == jackTokenizer.KEYWORD and self._tokenizer.keyWord() == 'var':
-            self.compileVarDec()
+            varCount += self.compileVarDec()
+        # function className.subroutineName n
+        self._writer.writeFunction(f'{self._className}.{subroutineName}',varCount)
         # multiple statements
         self.compileStatements() 
         # }
@@ -158,12 +160,12 @@ class CompilationEngine:
             # var name
             varName = self._tokenizer.identifier()
             # add arguments to symbol table
-            self._symbolTable.define(varName,type,'argument')
+            self._symbolTable.define(varName,type,'arg')
             self._tokenizer.advance()
             varCount += 1
         return varCount
     # Compiles a var declaration
-    def compileVarDec(self) -> None:
+    def compileVarDec(self) -> int:
         # var
         self._tokenizer.advance()
         # type keyword(int, string, boolean) | identifier(another class)
@@ -172,22 +174,25 @@ class CompilationEngine:
         # compile multiple var names
         varName = self._tokenizer.identifier()
         # Add local var declaration
-        self._symbolTable.define(varName,type,'local')
+        self._symbolTable.define(varName,type,'var')
         self._tokenizer.advance()
+
+        varCount = 1
 
         while self._tokenizer.tokenType() == jackTokenizer.SYMBOL and self._tokenizer.symbol() == ',':
             # symbol ,
             self._tokenizer.advance()
             # Add local var to the symbolTable
             varName = self._tokenizer.identifier()
-            self._symbolTable.define(varName,type,'local')
+            self._symbolTable.define(varName,type,'var')
             self._tokenizer.advance()
+            varCount += 1
         # symbol ;
         self._tokenizer.advance()
+        return varCount
     # Compiles a sequence of statements
     def compileStatements(self) -> None:
         # compile different statements while | if | let | do | return
-        print(self._tokenizer.keyWord())
         while self._tokenizer.tokenType() == jackTokenizer.KEYWORD:
             keyword = self._tokenizer.keyWord()
             if keyword == 'while':
@@ -211,6 +216,7 @@ class CompilationEngine:
         
     # Compiles a let statement
     def compileLet(self) -> None:
+        
         # let
         self._tokenizer.advance()
         # var name -> pop
@@ -218,25 +224,32 @@ class CompilationEngine:
         self._tokenizer.advance()
         kind = self._symbolTable.kindOf(varName)
         index = self._symbolTable.indexOf(varName)
+        isArray = self._tokenizer.tokenType() == jackTokenizer.SYMBOL and self._tokenizer.symbol() == '['
         # array handling
-        if self._tokenizer.tokenType() == jackTokenizer.SYMBOL and self._tokenizer.symbol() == '[':
+        if isArray:
             # [
             self._tokenizer.advance()
             self.compileExpression()
+            # Handling array access push
+            self._writer.writePush(self._kindToSegment(kind),index)
+            self._writer.writeArithmetic("add")
             # ]
             self._tokenizer.advance()
-            # handling array access using temp
-            self._writer.writePop('temp',0)
-            # anchor that
-            self._writer.writePop('pointer',1)
-            self._writer.writePush('temp',0)
-            self._writer.writePop('that',0)
         # =
         self._tokenizer.advance()
         self.compileExpression()
         # ;
         self._tokenizer.advance()
-        self._writer.writePop(self._kindToSegment(kind),varName)
+        # handling pop
+        if isArray:
+            # Handling array access pop using temp
+            self._writer.writePop('temp',0)
+            # anchor that
+            self._writer.writePop('pointer',1)
+            self._writer.writePush('temp',0)
+            self._writer.writePop('that',0)
+        else:
+            self._writer.writePop(self._kindToSegment(kind),index)
     # Compiles a while statement
     def compileWhile(self) -> None:
         trueLabel = f'WHILE_END{self._labelIndex['while']}'
@@ -249,7 +262,7 @@ class CompilationEngine:
         self._tokenizer.advance()
         self.compileExpression()
         # Negate the expression
-        self._writer.writeArithmetic('neg')
+        self._writer.writeArithmetic('not')
         # If-goto trueLabel
         self._writer.writeIf(trueLabel)
         # )
@@ -291,7 +304,7 @@ class CompilationEngine:
         self._tokenizer.advance()
         self.compileExpression()
         # negate the expression
-        self._writer.writeArithmetic('neg')
+        self._writer.writeArithmetic('not')
         # )
         self._tokenizer.advance()
         # If-goto true label
@@ -325,6 +338,7 @@ class CompilationEngine:
         # Handle op
         symbol = self._tokenizer.symbol()
         while self._tokenizer.tokenType() == jackTokenizer.SYMBOL and symbol in self.OP.keys():
+            print(symbol)
             self._tokenizer.advance()
             self.compileTerm()
             command = self.OP[symbol]
@@ -345,6 +359,9 @@ class CompilationEngine:
         # Handle string const
         elif tokenType == jackTokenizer.STRING_CONST:
             ch = self._tokenizer.stringVal()
+            # first construct a new String object
+            self._writer.writePush("constant",len(ch))
+            self._writer.writeCall("String.new",1)
             for character in range(0, len(ch)):
                 self._writer.writePush('constant',ord(ch[character]))
                 self._writer.writeCall("String.appendChar",2)
@@ -367,17 +384,20 @@ class CompilationEngine:
         elif tokenType == jackTokenizer.IDENTIFIER:
             # subroutine | class | var name
             varName = self._tokenizer.identifier()
-       
+            print(varName)
             nextToken = self._lookAhead(1)['token']
+            print(nextToken)
             # subroutine | class
             if nextToken in ['(','.']:
-             
                 subroutineName = ""
-                # . | (
+                # varName
                 self._tokenizer.advance()
-                
+
                 # handle class or var name
                 if nextToken == '.':
+                    # .
+                    self._tokenizer.advance()
+
                     # get variable from symbolTable
                     
                     index = self._symbolTable.indexOf(varName)
@@ -392,11 +412,9 @@ class CompilationEngine:
                         type = self._symbolTable.typeOf(varName)
                         className = type
 
+                    subroutineName=f'{className}.{self._tokenizer.identifier()}'  
                     # subroutine name
-                    self._tokenizer.advance()
-                    subroutineName=f'{className}.{self._tokenizer.identifier()}'    
-                    
-                    # self._tokenizer.advance()
+                    self._tokenizer.advance()  
                 else:
                     subroutineName = f'{self._className}.{varName}'                
                 # (
@@ -419,7 +437,7 @@ class CompilationEngine:
             else:
                 kind = self._symbolTable.kindOf(varName)
                 index =  self._symbolTable.indexOf(varName)
-                self._writer.writePush(self._kindToSegment(kind),index)
+                # var name
                 self._tokenizer.advance()
                 if nextToken == '[':
                     # handle array indexing
@@ -428,9 +446,15 @@ class CompilationEngine:
                     self.compileExpression()
                     # symbol ]
                     self._tokenizer.advance()
-                # handling array access
-                self._writer.writePush(self._kindToSegment(kind),index)
-                self._writer.writeArithmetic('add')
+                    # handling array access
+                    self._writer.writePush(self._kindToSegment(kind),index)
+                    self._writer.writeArithmetic('add')
+                    # anchor that
+                    self._writer.writePop('pointer',1)
+                    # push array element value
+                    self._writer.writePush('that',0) 
+                else:
+                    self._writer.writePush(self._kindToSegment(kind),index)
         # Handle symbol
         else:
             symbol = self._tokenizer.symbol()

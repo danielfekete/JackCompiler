@@ -33,7 +33,7 @@ class VmWriter:
         pass
     # Writes a VM function command
     def writeFunction(self,name:str,nLocals:int)->None:
-        self.outFile.write(f'function {name} {nLocals}')
+        self.outFile.write(f'function {name} {nLocals}\n')
         pass
     # Writes a VM return command
     def writeReturn(self)->None:
