@@ -1,7 +1,7 @@
 import jackTokenizer
 import vmWriter
 import symbolTable
-from osUtils import osTypes
+from osUtils import osSubroutines
 class CompilationEngine:
     
     OP = {
@@ -28,6 +28,7 @@ class CompilationEngine:
     def __init__(self):
         self._tokenizer = None
         self._writer = None
+        self._symbolTable = None
         
         self._className = ''
         self._labelIndex={
@@ -35,18 +36,28 @@ class CompilationEngine:
             'if':0
         }
         # construct with os void return types
-        self._returnTypes={}
-        self._symbolTable = symbolTable.SymbolTable()
+        self._subroutines={}
+        
 
     def setTokenizer(self,tokenizer:jackTokenizer.JackTokenizer):
         self._tokenizer = tokenizer
 
     def setWriter(self,writer:vmWriter.VmWriter):
         self._writer = writer
+
+    def reset(self):
+        self._labelIndex={
+            'while':0,
+            'if':0
+        }
+        self._symbolTable=symbolTable.SymbolTable()
+        self._className=''
+
         
-    def run(self,tokenizer:jackTokenizer.JackTokenizer,writer:vmWriter):
-        self.setTokenizer(tokenizer)
+    def run(self,tokenizer:jackTokenizer.JackTokenizer,writer:vmWriter.VmWriter):
+        self.setTokenizer(tokenizer) 
         self.setWriter(writer)
+        self.reset()
         while self._tokenizer.hasMoreTokens():
             self._tokenizer.advance()
             self.compileClass()
@@ -65,8 +76,12 @@ class CompilationEngine:
         # class var declarations, possibly empty
         while self._tokenizer.tokenType() == jackTokenizer.KEYWORD and self._tokenizer.keyWord() in ['static','field']:
             self.compileClassVarDec()
+        print(self._className)
+        print(self._symbolTable.getClassTable())
 
         # class subroutines, possibly empty
+        # collect the subroutine(s) name and return type
+        self._fillSubroutines()
         while self._tokenizer.tokenType() == jackTokenizer.KEYWORD and self._tokenizer.keyWord() in ['constructor','function','method']:
             self.compileSubroutine()
         # symbol
@@ -94,6 +109,8 @@ class CompilationEngine:
             self._tokenizer.advance()
             varName = self._tokenizer.identifier()
             # Add declaration to the symbol table
+            print(varName)
+            print(kind)
             self._symbolTable.define(varName,type,kind)
             # {varName}
             self._tokenizer.advance()
@@ -111,7 +128,7 @@ class CompilationEngine:
         self._tokenizer.advance()
         # subroutine name
         subroutineName = self._tokenizer.identifier()
-        self._returnTypes[f'{self._className}{subroutineName}'] = returnType
+        
         # {subroutineName}
         self._tokenizer.advance()
         # (
@@ -122,6 +139,16 @@ class CompilationEngine:
         self.compileParameterList()
         # symbol )
         self._tokenizer.advance()
+        
+        # {
+        self._tokenizer.advance()
+        # multiple var declarations
+        varCount = 0
+        while self._tokenizer.tokenType() == jackTokenizer.KEYWORD and self._tokenizer.keyWord() == 'var':
+            varCount += self.compileVarDec()
+        # function className.subroutineName n
+        self._writer.writeFunction(f'{self._className}.{subroutineName}',varCount)
+
         # handling base address anchoring
         if keyWord == "constructor":
             # Get the number of fields of the class
@@ -134,14 +161,7 @@ class CompilationEngine:
         elif keyWord == "method":
             self._writer.writePush('argument',0)
             self._writer.writePop('pointer',0)
-        # {
-        self._tokenizer.advance()
-        # multiple var declarations
-        varCount = 0
-        while self._tokenizer.tokenType() == jackTokenizer.KEYWORD and self._tokenizer.keyWord() == 'var':
-            varCount += self.compileVarDec()
-        # function className.subroutineName n
-        self._writer.writeFunction(f'{self._className}.{subroutineName}',varCount)
+
         # multiple statements
         self.compileStatements() 
         # }
@@ -254,6 +274,7 @@ class CompilationEngine:
     def compileWhile(self) -> None:
         trueLabel = f'WHILE_END{self._labelIndex['while']}'
         falseLabel = f'WHILE_EXP{self._labelIndex['while']}'
+        self._labelIndex['while'] += 1
         # Write false label
         self._writer.writeLabel(falseLabel)
         # while
@@ -276,7 +297,7 @@ class CompilationEngine:
         self._writer.writeGoto(falseLabel)
         # Write true label
         self._writer.writeLabel(trueLabel)
-        self._labelIndex['while'] += 1
+        
         
     # Compiles a return statement
     def compileReturn(self) -> None:
@@ -297,6 +318,7 @@ class CompilationEngine:
     def compileIf(self) -> None:
         trueLabel = f'IF_TRUE{str(self._labelIndex['if'])}'
         falseLabel = f'IF_FALSE{str(self._labelIndex['if'])}'
+        self._labelIndex['if'] += 1
 
         # if
         self._tokenizer.advance()
@@ -316,6 +338,8 @@ class CompilationEngine:
         self._tokenizer.advance()
         # Goto false label
         self._writer.writeGoto(falseLabel)
+        # Write true label
+        self._writer.writeLabel(trueLabel)
         if self._tokenizer.tokenType() == jackTokenizer.KEYWORD:
             keyword = self._tokenizer.keyWord()
             if keyword == 'else':
@@ -323,14 +347,13 @@ class CompilationEngine:
                 self._tokenizer.advance()
                 # {
                 self._tokenizer.advance()
-                # Write trueLabel
-                self._writer.writeLabel(trueLabel)
+                
                 self.compileStatements()
                 # }
                 self._tokenizer.advance()
         # Write falseLabel
         self._writer.writeLabel(falseLabel)
-        self._labelIndex['if'] += 1
+       
 
     # Compiles an expression
     def compileExpression(self) -> None:
@@ -338,7 +361,6 @@ class CompilationEngine:
         # Handle op
         symbol = self._tokenizer.symbol()
         while self._tokenizer.tokenType() == jackTokenizer.SYMBOL and symbol in self.OP.keys():
-            print(symbol)
             self._tokenizer.advance()
             self.compileTerm()
             command = self.OP[symbol]
@@ -374,7 +396,7 @@ class CompilationEngine:
             elif keyWord in ["true"]:
                 # negate 1 -> -1
                 self._writer.writePush("constant",1)
-                self._writer.writeArithmetic(self.OP["-"])
+                self._writer.writeArithmetic(self.UNARY_OP["~"])
             # this handling
             elif keyWord == "this":
                 # base address of the object
@@ -384,17 +406,18 @@ class CompilationEngine:
         elif tokenType == jackTokenizer.IDENTIFIER:
             # subroutine | class | var name
             varName = self._tokenizer.identifier()
-            print(varName)
             nextToken = self._lookAhead(1)['token']
-            print(nextToken)
+            isClassCall = False
             # subroutine | class
             if nextToken in ['(','.']:
+                isClassCall = True if nextToken == '.' else False
                 subroutineName = ""
                 # varName
                 self._tokenizer.advance()
 
+
                 # handle class or var name
-                if nextToken == '.':
+                if isClassCall:
                     # .
                     self._tokenizer.advance()
 
@@ -404,7 +427,7 @@ class CompilationEngine:
 
                     className = varName
                     # handle var name
-                    if index:
+                    if index != None:
                         kind = self._symbolTable.kindOf(varName)
                         # push var to the stack
                         self._writer.writePush(self._kindToSegment(kind),index)
@@ -416,21 +439,34 @@ class CompilationEngine:
                     # subroutine name
                     self._tokenizer.advance()  
                 else:
-                    subroutineName = f'{self._className}.{varName}'                
+                    subroutineName = f'{self._className}.{varName}'
+                
+                # Handle subroutine returnType and kind
+                subroutineData={}
+                if subroutineName in self._subroutines:
+                    subroutineData = self._subroutines[subroutineName]
+
+                else:
+                    # os functions
+                    subroutineData = osSubroutines[subroutineName]
+                kind = subroutineData["kind"]
+                returnType = subroutineData["returnType"]             
+                # push this
+                if not isClassCall and kind == "method":
+                    self._writer.writePush("pointer",0)
+
                 # (
                 self._tokenizer.advance()
                 n = self.compileExpressionList()
+                # this object + parameter count
+                if kind == "method":
+                    n += 1
+
                 # )
                 self._tokenizer.advance()
                 self._writer.writeCall(subroutineName,n)
-        
-                # handleReturn type         
-                returnType = ""
-                if subroutineName in self._returnTypes:
-                    returnType = self._returnTypes[subroutineName]
-                else:
-                    # os functions
-                    returnType = osTypes[subroutineName]
+                
+                
                 if returnType == "void":
                     # pop temp 0
                     self._writer.writePop('temp',0)
@@ -460,15 +496,17 @@ class CompilationEngine:
             symbol = self._tokenizer.symbol()
             # Unary op term
             if symbol in self.UNARY_OP.keys():
+                # -
+                self._tokenizer.advance()
                 self.compileTerm()
                 # Negate, bit wise boolean negate
                 self._writer.writeArithmetic(self.UNARY_OP[symbol])
             # Expression in parentheses
             elif symbol == '(':
-                # symbol (
+                # (
                 self._tokenizer.advance()
                 self.compileExpression()
-                # symbol )
+                # )
                 self._tokenizer.advance()
     # Compiles a (possibly empty) list of expressions
     def compileExpressionList(self) -> None:
@@ -488,6 +526,21 @@ class CompilationEngine:
         currentPosition = self._tokenizer.getCurrentPosition()
         if currentPosition + by < len(tokens):
             return tokens[currentPosition + by]
+        
+    def _fillSubroutines(self):
+        tokens = self._tokenizer.getTokens()
+        l = len(tokens)
+        for x in range(l):
+            tokenDict = tokens[x]
+            if tokenDict["token"] in ["function","method","constructor"]:
+                kind = tokenDict["token"]
+                returnType = tokens[x+1]["token"]
+                subroutineName = f'{self._className}.{tokens[x+2]["token"]}'
+                self._subroutines[subroutineName] = {
+                    "returnType":returnType,
+                    "kind":kind
+                }
+
 
     def _kindToSegment(self,kind:str):
         if kind == "var":

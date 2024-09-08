@@ -33,8 +33,9 @@ def compileFile(inSrc:str,engine:compilationEngine.CompilationEngine):
     if os.path.exists(outSrc):
         os.remove(outSrc)
 
-    # Create a jack tokenizer
+    # Construct a jack tokenizer
     tokenizer = jackTokenizer.JackTokenizer(inSrc)
+    # Construct a vm writer
     writer = vmWriter.VmWriter(outSrc)
     engine.run(tokenizer,writer)
 

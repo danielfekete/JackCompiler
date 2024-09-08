@@ -17,8 +17,8 @@ class SymbolTable:
     # Starts a new subroutine scope
     def startSubroutine(self):
         self._subroutineTable.clear()
-        self._index['argument'] = 0
-        self._index['local'] = 0
+        self._index['arg'] = 0
+        self._index['var'] = 0
     # Defines a new identifier of a given name, type, and kind and assigns it a running index
     def define(self,name:str,type:str,kind:str):
         new = (type,kind,self._index[kind])
@@ -29,7 +29,7 @@ class SymbolTable:
         self._index[kind] += 1
     # Returns the number of variables of the given kind already defined in the current scope
     def varCount(self,kind:str)->int:
-        self._index[kind]
+        return self._index[kind]
     # Returns the kind of the named identifier in the current scope. If the identifier is unknown in the current scope, returns NONE
     def kindOf(self,name:str)->str | None:
         identifier=self._getIdentifier(name)
