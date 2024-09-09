@@ -11,8 +11,6 @@ def main():
     if not os.path.exists(src):
         print('Invalid folder/file path')
         return
-    
-    # jackAnalyzer.JackAnalyzer(src)
 
     isDir = os.path.isdir(src)
     engine = compilationEngine.CompilationEngine()
