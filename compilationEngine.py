@@ -69,6 +69,7 @@ class CompilationEngine:
         self._tokenizer.advance()
         # {class name}
         self._className = self._tokenizer.identifier()
+        print(self._className)
         self._tokenizer.advance()
         # {
         self._tokenizer.advance()
@@ -76,12 +77,9 @@ class CompilationEngine:
         # class var declarations, possibly empty
         while self._tokenizer.tokenType() == jackTokenizer.KEYWORD and self._tokenizer.keyWord() in ['static','field']:
             self.compileClassVarDec()
-        print(self._className)
-        print(self._symbolTable.getClassTable())
 
         # class subroutines, possibly empty
         # collect the subroutine(s) name and return type
-        self._fillSubroutines()
         while self._tokenizer.tokenType() == jackTokenizer.KEYWORD and self._tokenizer.keyWord() in ['constructor','function','method']:
             self.compileSubroutine()
         # symbol
@@ -109,8 +107,6 @@ class CompilationEngine:
             self._tokenizer.advance()
             varName = self._tokenizer.identifier()
             # Add declaration to the symbol table
-            print(varName)
-            print(kind)
             self._symbolTable.define(varName,type,kind)
             # {varName}
             self._tokenizer.advance()
@@ -527,19 +523,9 @@ class CompilationEngine:
         if currentPosition + by < len(tokens):
             return tokens[currentPosition + by]
         
-    def _fillSubroutines(self):
-        tokens = self._tokenizer.getTokens()
-        l = len(tokens)
-        for x in range(l):
-            tokenDict = tokens[x]
-            if tokenDict["token"] in ["function","method","constructor"]:
-                kind = tokenDict["token"]
-                returnType = tokens[x+1]["token"]
-                subroutineName = f'{self._className}.{tokens[x+2]["token"]}'
-                self._subroutines[subroutineName] = {
-                    "returnType":returnType,
-                    "kind":kind
-                }
+    def setSubroutines(self,subroutines):
+        self._subroutines = subroutines
+        
 
 
     def _kindToSegment(self,kind:str):
