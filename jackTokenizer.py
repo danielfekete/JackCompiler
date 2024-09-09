@@ -38,22 +38,23 @@ class JackTokenizer:
             for index in range(partLen):
                 tokenType = None
                 character = part[index]
+                # concat token with the current character
                 newToken = token + character
-
                 # SYMBOL
-                if character in self.symbols:
+                if character in self.symbols and len(newToken) == 1:
                     newToken = character
                     tokenType = SYMBOL
                 # KEYWORD
-                elif newToken in self.keywords:
+                elif newToken in self.keywords and (index == partLen - 1 or part[index + 1] in self.symbols):
                     tokenType = KEYWORD
                 # INT_CONST
                 elif re.match(r"^\d*$",token) and re.match(r"\d",character) and (index == partLen - 1 or not re.match(r"\d",part[index+1])):
                     tokenType = INT_CONST
                 # STRING_CONST
-                elif character == '"' and len(token) and token[0] == '"':
-                        tokenType = STRING_CONST
-                        newToken = token.replace('"','')
+                elif character == '"' or (len(token) and token[0] == '"') :
+                        if  character == '"' and len(token):
+                            tokenType = STRING_CONST
+                            newToken = token.replace('"','')
                 # IDENTIFIER
                 elif index == partLen - 1 or part[index + 1] in self.symbols:
                     tokenType = IDENTIFIER

@@ -41,22 +41,22 @@ push constant 0
 eq
 not
 not
-if-goto IF_TRUE0
+if-goto IF_TRUE1
 push constant 8000
 push local 1
 add
 push constant 1
 call Memory.poke 2
 pop temp 0
-goto IF_FALSE0
-label IF_TRUE0
+goto IF_FALSE1
+label IF_TRUE1
 push constant 8000
 push local 1
 add
 push constant 0
 call Memory.poke 2
 pop temp 0
-label IF_FALSE0
+label IF_FALSE1
 goto IF_FALSE0
 label IF_TRUE0
 push constant 0

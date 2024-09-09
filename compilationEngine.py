@@ -69,7 +69,8 @@ class CompilationEngine:
         self._tokenizer.advance()
         # {class name}
         self._className = self._tokenizer.identifier()
-        print(self._className)
+        # print(self._tokenizer.getTokens())
+        print(f'compiling: {self._className}')
         self._tokenizer.advance()
         # {
         self._tokenizer.advance()
@@ -422,6 +423,7 @@ class CompilationEngine:
                     index = self._symbolTable.indexOf(varName)
 
                     className = varName
+
                     # handle var name
                     if index != None:
                         kind = self._symbolTable.kindOf(varName)
@@ -454,6 +456,8 @@ class CompilationEngine:
                 # (
                 self._tokenizer.advance()
                 n = self.compileExpressionList()
+                # print(subroutineName)
+                # print(n)
                 # this object + parameter count
                 if kind == "method":
                     n += 1
@@ -511,6 +515,7 @@ class CompilationEngine:
             if varCount > 0:
                 # ,
                 self._tokenizer.advance()
+            # print(self._tokenizer.getCurrentToken())
             self.compileExpression()
             varCount += 1
         return varCount
